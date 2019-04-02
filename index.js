@@ -3,10 +3,10 @@ const fs = require('fs');
 const path = require('path')
 // const config = require('../config')
 const archiver = require('archiver');
-function zip(_path) {
+function zip(_path, fileName) {
   // create a file to stream archive data to.
-  const output = fs.createWriteStream(path.resolve(_path, '../dist.zip'));
-  console.log(path.resolve(_path, '../dist.zip'));
+  const output = fs.createWriteStream(path.resolve(_path, `../${fileName}.zip`));
+  console.log(path.resolve(_path, `../${fileName}.zip`));
 
   const archive = archiver('zip', {
     zlib: { level: 9 } // Sets the compression level.
@@ -59,10 +59,20 @@ module.exports = api => {
     details:'https://github.com/greenwheat/vue-cli-plugin-build-zip'
   }, () => {
     const distPath = api.resolve('./dist');
-    zip(distPath);
+    zip(distPath, 'dist');
+  }),
+  
+  api.registerCommand('zip:build:prod',{
+    description: 'Run zip command to archive files from prod folder to prod.zip',
+    usage: 'vue-cli-service zip:build:prod',
+    details:'https://github.com/greenwheat/vue-cli-plugin-build-zip'
+  }, () => {
+    const distPath = api.resolve('./prod');
+    zip(distPath, 'prod');
   })
 }
 
 module.exports.defaultModes = {
-  'zip:build': 'production'
+  'zip:build': 'development',
+  'zip:build:prod': 'production'
 }
